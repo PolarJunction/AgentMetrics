@@ -41,17 +41,44 @@
       transform: translateY(-4px);
       box-shadow: 0 8px 25px rgba(0,0,0,0.3);
     }
+    .metric-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
     .metric-label {
       font-size: 0.875rem;
       color: #94a3b8;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
+    }
+    .trend-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+    }
+    .trend-up {
+      color: #34d399;
+      background: rgba(52, 211, 153, 0.1);
+    }
+    .trend-down {
+      color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+    }
+    .trend-neutral {
+      color: #94a3b8;
+      background: rgba(148, 163, 184, 0.1);
     }
     .metric-value {
       font-size: 2.5rem;
       font-weight: 700;
       color: #60a5fa;
+      transition: all 0.3s ease;
     }
     .metric-card:nth-child(2) .metric-value { color: #34d399; }
     .metric-card:nth-child(3) .metric-value { color: #f472b6; }
@@ -71,6 +98,136 @@
       font-weight: 600;
       margin-bottom: 0.5rem;
     }
+
+    /* Charts Section */
+    .charts-section {
+      max-width: 1200px;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    .chart-card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #334155;
+      animation: fadeIn 0.5s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .chart-card:nth-child(1) { animation-delay: 0.1s; }
+    .chart-card:nth-child(2) { animation-delay: 0.2s; }
+    .chart-card:nth-child(3) { animation-delay: 0.3s; }
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 1rem;
+    }
+
+    /* Line Chart */
+    .line-chart {
+      width: 100%;
+      height: 150px;
+    }
+    .line-chart path {
+      fill: none;
+      stroke: #60a5fa;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .line-chart .area {
+      fill: url(#lineGradient);
+      stroke: none;
+    }
+    .line-chart .dot {
+      fill: #60a5fa;
+      stroke: #0f172a;
+      stroke-width: 2;
+    }
+    .line-chart .grid-line {
+      stroke: #334155;
+      stroke-width: 1;
+      stroke-dasharray: 3,3;
+    }
+    .line-chart .axis-label {
+      fill: #64748b;
+      font-size: 10px;
+    }
+
+    /* Heatmap */
+    .heatmap {
+      display: grid;
+      grid-template-columns: repeat(24, 1fr);
+      gap: 2px;
+    }
+    .heatmap-cell {
+      aspect-ratio: 1;
+      border-radius: 2px;
+      transition: transform 0.2s, opacity 0.2s;
+      cursor: pointer;
+    }
+    .heatmap-cell:hover {
+      transform: scale(1.3);
+      z-index: 1;
+    }
+    .heatmap-label {
+      grid-column: span 24;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+    .heatmap-row {
+      display: contents;
+    }
+    .heatmap-day {
+      font-size: 0.65rem;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Bar Chart */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 120px;
+      padding: 1rem 0;
+      border-bottom: 1px solid #334155;
+    }
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .bar {
+      width: 40px;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.5s ease-out;
+      animation: growUp 0.5s ease-out;
+    }
+    @keyframes growUp {
+      from { transform: scaleY(0); }
+      to { transform: scaleY(1); }
+    }
+    .bar-label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+    .bar-value {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
     .last-updated {
       text-align: center;
       margin-top: 2rem;
@@ -84,27 +241,66 @@
   
   <div class="dashboard">
     <div class="metric-card">
-      <div class="metric-label">Active Sessions</div>
+      <div class="metric-header">
+        <div class="metric-label">Active Sessions</div>
+        <div class="trend-indicator trend-up" id="sessions-trend">↑ 0%</div>
+      </div>
       <div class="metric-value" id="active-sessions">--</div>
       <div class="metric-footer">Current running agent sessions</div>
     </div>
     
     <div class="metric-card">
-      <div class="metric-label">Tasks Completed</div>
+      <div class="metric-header">
+        <div class="metric-label">Tasks Completed</div>
+        <div class="trend-indicator trend-up" id="tasks-trend">↑ 0%</div>
+      </div>
       <div class="metric-value" id="total-tasks">--</div>
       <div class="metric-footer">Total tasks processed</div>
     </div>
     
     <div class="metric-card">
-      <div class="metric-label">Active Agents</div>
+      <div class="metric-header">
+        <div class="metric-label">Active Agents</div>
+        <div class="trend-indicator trend-neutral" id="agents-trend">→ 0%</div>
+      </div>
       <div class="metric-value" id="agent-count">--</div>
       <div class="metric-footer">Registered agents</div>
     </div>
     
     <div class="metric-card">
-      <div class="metric-label">Server Uptime</div>
+      <div class="metric-header">
+        <div class="metric-label">Server Uptime</div>
+        <div class="trend-indicator trend-up" id="uptime-trend">↑ 0%</div>
+      </div>
       <div class="metric-value" id="uptime">--</div>
       <div class="metric-footer">Dashboard running time</div>
+    </div>
+  </div>
+  
+  <div class="charts-section">
+    <!-- Line Chart: Tasks over time -->
+    <div class="chart-card">
+      <div class="chart-title">📈 Tasks Completed (Last 24 Hours)</div>
+      <svg class="line-chart" id="tasks-line-chart" viewBox="0 0 300 150">
+        <defs>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:0" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+    
+    <!-- Heatmap: Hourly activity -->
+    <div class="chart-card">
+      <div class="chart-title">🗓️ Activity Heatmap (Hourly)</div>
+      <div class="heatmap" id="activity-heatmap"></div>
+    </div>
+    
+    <!-- Bar Chart: Agent workload -->
+    <div class="chart-card">
+      <div class="chart-title">👥 Agent Workload Distribution</div>
+      <div class="bar-chart" id="workload-bar-chart"></div>
     </div>
   </div>
   
@@ -114,6 +310,53 @@
   </div>
 
   <script>
+    // Historical data for charts (mock)
+    let historicalTasks = [];
+    let previousMetrics = null;
+    
+    // Generate mock historical data for the line chart
+    function generateHistoricalTasks() {
+      const now = Date.now();
+      const data = [];
+      for (let i = 23; i >= 0; i--) {
+        data.push({
+          hour: new Date(now - i * 3600000).getHours(),
+          tasks: Math.floor(Math.random() * 15) + (i < 6 ? 3 : 8)
+        });
+      }
+      return data;
+    }
+
+    // Generate heatmap data (7 days x 24 hours)
+    function generateHeatmapData() {
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const data = [];
+      const today = new Date().getDay();
+      
+      for (let d = 0; d < 7; d++) {
+        const dayData = { day: days[(today - 6 + d + 7) % 7], hours: [] };
+        for (let h = 0; h < 24; h++) {
+          // Simulate higher activity during work hours
+          let intensity = Math.random();
+          if (h >= 9 && h <= 17) intensity *= 2;
+          if (d === today - 1 || d === today) intensity *= 1.5; // Recent days more active
+          dayData.hours.push(Math.min(1, intensity));
+        }
+        data.push(dayData);
+      }
+      return data;
+    }
+
+    // Generate workload distribution data
+    function generateWorkloadData() {
+      return [
+        { agent: 'Delta', tasks: Math.floor(Math.random() * 20) + 10, color: '#60a5fa' },
+        { agent: 'Zero', tasks: Math.floor(Math.random() * 15) + 8, color: '#34d399' },
+        { agent: 'Alpha', tasks: Math.floor(Math.random() * 12) + 5, color: '#f472b6' },
+        { agent: 'Beta', tasks: Math.floor(Math.random() * 10) + 3, color: '#fbbf24' }
+      ];
+    }
+
     function formatUptime(seconds) {
       const hrs = Math.floor(seconds / 3600);
       const mins = Math.floor((seconds % 3600) / 60);
@@ -123,15 +366,129 @@
       return `${secs}s`;
     }
 
+    function calculateTrend(current, previous) {
+      if (!previous) return { value: 0, direction: 'neutral' };
+      const change = ((current - previous) / previous) * 100;
+      return {
+        value: Math.abs(change).toFixed(0),
+        direction: change > 0 ? 'up' : change < 0 ? 'down' : 'neutral'
+      };
+    }
+
+    function updateTrendIndicator(id, trend) {
+      const el = document.getElementById(id);
+      el.className = `trend-indicator trend-${trend.direction}`;
+      const arrow = trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→';
+      el.textContent = `${arrow} ${trend.value}%`;
+    }
+
+    function renderLineChart(data) {
+      const svg = document.getElementById('tasks-line-chart');
+      const width = 300, height = 150;
+      const padding = { top: 10, right: 10, bottom: 25, left: 30 };
+      
+      const maxVal = Math.max(...data.map(d => d.tasks), 10);
+      const points = data.map((d, i) => {
+        const x = padding.left + (i / (data.length - 1)) * (width - padding.left - padding.right);
+        const y = height - padding.bottom - (d.tasks / maxVal) * (height - padding.top - padding.bottom);
+        return `${x},${y}`;
+      });
+      
+      // Create path
+      let html = `
+        <defs>
+          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:0" />
+          </linearGradient>
+        </defs>
+      `;
+      
+      // Grid lines
+      for (let i = 0; i <= 4; i++) {
+        const y = padding.top + (i / 4) * (height - padding.top - padding.bottom);
+        html += `<line class="grid-line" x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}"/>`;
+      }
+      
+      // Area fill
+      const areaPoints = `${padding.left},${height - padding.bottom} ` + points.join(' ') + `,${width - padding.right},${height - padding.bottom}`;
+      html += `<path class="area" d="M ${areaPoints}"/>`;
+      
+      // Line
+      html += `<path d="M ${points.join(' L ')}"/>`;
+      
+      // Dots
+      points.forEach((p, i) => {
+        const [x, y] = p.split(',');
+        if (i % 4 === 0) { // Show every 4th dot
+          html += `<circle class="dot" cx="${x}" cy="${y}" r="3"/>`;
+        }
+      });
+      
+      // X-axis labels
+      data.forEach((d, i) => {
+        if (i % 6 === 0) {
+          const x = padding.left + (i / (data.length - 1)) * (width - padding.left - padding.right);
+          html += `<text class="axis-label" x="${x}" y="${height - 5}" text-anchor="middle">${d.hour}h</text>`;
+        }
+      });
+      
+      svg.innerHTML = html;
+    }
+
+    function renderHeatmap(data) {
+      const container = document.getElementById('activity-heatmap');
+      let html = `<div class="heatmap-label"><span>12am</span><span>6am</span><span>12pm</span><span>6pm</span><span>11pm</span></div>`;
+      
+      data.forEach(row => {
+        html += `<div class="heatmap-day">${row.day}</div>`;
+        row.hours.forEach(intensity => {
+          const color = intensity > 0.7 ? '#34d399' : intensity > 0.4 ? '#60a5fa' : intensity > 0.2 ? '#334155' : '#1e293b';
+          const opacity = 0.3 + intensity * 0.7;
+          html += `<div class="heatmap-cell" style="background: ${color}; opacity: ${opacity}" title="${(intensity * 100).toFixed(0)}% activity"></div>`;
+        });
+      });
+      
+      container.innerHTML = html;
+    }
+
+    function renderBarChart(data) {
+      const container = document.getElementById('workload-bar-chart');
+      const maxVal = Math.max(...data.map(d => d.tasks));
+      let html = '';
+      
+      data.forEach(d => {
+        const height = (d.tasks / maxVal) * 80;
+        html += `
+          <div class="bar-group">
+            <div class="bar-value">${d.tasks}</div>
+            <div class="bar" style="height: ${height}px; background: ${d.color}; animation-delay: ${Math.random() * 0.3}s"></div>
+            <div class="bar-label">${d.agent}</div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
     async function fetchMetrics() {
       try {
         const res = await fetch('/api/metrics');
         const data = await res.json();
         
+        // Update metric values with animation
         document.getElementById('active-sessions').textContent = data.activeSessions;
         document.getElementById('total-tasks').textContent = data.totalTasks;
         document.getElementById('agent-count').textContent = data.agentCount;
         document.getElementById('uptime').textContent = formatUptime(data.uptime);
+        
+        // Update trends
+        if (previousMetrics) {
+          updateTrendIndicator('sessions-trend', calculateTrend(data.activeSessions, previousMetrics.activeSessions));
+          updateTrendIndicator('tasks-trend', calculateTrend(data.totalTasks, previousMetrics.totalTasks));
+          updateTrendIndicator('agents-trend', calculateTrend(data.agentCount, previousMetrics.agentCount));
+        }
+        previousMetrics = { ...data };
         
         const now = new Date();
         document.getElementById('last-updated').textContent = now.toLocaleTimeString();
@@ -144,11 +501,29 @@
       }
     }
 
+    // Initialize charts
+    historicalTasks = generateHistoricalTasks();
+    renderLineChart(historicalTasks);
+    renderHeatmap(generateHeatmapData());
+    renderBarChart(generateWorkloadData());
+    
     // Initial fetch
     fetchMetrics();
     
     // Refresh every 10 seconds
     setInterval(fetchMetrics, 10000);
+    
+    // Refresh charts every 30 seconds
+    setInterval(() => {
+      historicalTasks.shift();
+      historicalTasks.push({
+        hour: new Date().getHours(),
+        tasks: Math.floor(Math.random() * 15) + 5
+      });
+      renderLineChart(historicalTasks);
+      renderHeatmap(generateHeatmapData());
+      renderBarChart(generateWorkloadData());
+    }, 30000);
   </script>
 </body>
 </html>
