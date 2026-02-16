@@ -248,6 +248,40 @@
       margin-bottom: 0.5rem;
     }
 
+    .gateway-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+
+    .gateway-indicator.connected {
+      background: #10b981;
+      color: #fff;
+    }
+
+    .gateway-indicator.disconnected {
+      background: #6b7280;
+      color: #fff;
+    }
+
+    .gateway-indicator.error {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    .gateway-indicator::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
     /* Charts Section */
     .charts-section {
       max-width: 1200px;
@@ -884,6 +918,7 @@
   </div>
   
   <div class="last-updated">
+    <span id="gateway-status" class="gateway-indicator"></span>
     <span id="mock-notice"></span>
     Last updated: <span id="last-updated">--</span>
   </div>
@@ -1270,14 +1305,28 @@
         const now = new Date();
         document.getElementById('last-updated').textContent = now.toLocaleTimeString();
         
-        if (data.mock) {
-          document.getElementById('mock-notice').innerHTML = '<span class="mock-badge">MOCK DATA</span>';
+        // Update gateway status indicator
+        const gatewayStatus = document.getElementById('gateway-status');
+        if (data.gatewayConnected) {
+          gatewayStatus.className = 'gateway-indicator connected';
+          gatewayStatus.textContent = 'GATEWAY';
+          document.getElementById('mock-notice').innerHTML = '';
+        } else {
+          gatewayStatus.className = 'gateway-indicator disconnected';
+          gatewayStatus.textContent = 'OFFLINE';
+          if (data.mock) {
+            document.getElementById('mock-notice').innerHTML = '<span class="mock-badge">MOCK DATA</span>';
+          }
         }
 
         // Update charts with historical data
         renderLineChart(historicalData.last24h);
       } catch (error) {
         console.error('Failed to fetch metrics:', error);
+        // Show error state
+        const gatewayStatus = document.getElementById('gateway-status');
+        gatewayStatus.className = 'gateway-indicator error';
+        gatewayStatus.textContent = 'ERROR';
       }
     }
 
@@ -1663,8 +1712,18 @@
         const now = new Date();
         document.getElementById('last-updated').textContent = now.toLocaleTimeString();
         
-        if (data.mock) {
-          document.getElementById('mock-notice').innerHTML = '<span class="mock-badge">MOCK DATA</span>';
+        // Update gateway status indicator
+        const gatewayStatus = document.getElementById('gateway-status');
+        if (data.gatewayConnected) {
+          gatewayStatus.className = 'gateway-indicator connected';
+          gatewayStatus.textContent = 'GATEWAY';
+          document.getElementById('mock-notice').innerHTML = '';
+        } else {
+          gatewayStatus.className = 'gateway-indicator disconnected';
+          gatewayStatus.textContent = 'OFFLINE';
+          if (data.mock) {
+            document.getElementById('mock-notice').innerHTML = '<span class="mock-badge">MOCK DATA</span>';
+          }
         }
 
         // Update charts with historical data
