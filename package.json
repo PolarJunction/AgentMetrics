@@ -1,0 +1,13 @@
+{
+  "name": "agent-metrics",
+  "version": "1.0.0",
+  "description": "Real-time agent productivity metrics dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0"
+  }
+}
