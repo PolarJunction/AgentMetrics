@@ -440,6 +440,340 @@
       font-size: 0.875rem;
     }
 
+    /* Alert Banner */
+    .alert-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 600;
+      z-index: 1000;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .alert-banner.visible {
+      transform: translateY(0);
+    }
+
+    .alert-banner.info {
+      background: linear-gradient(90deg, #3b82f6, #60a5fa);
+      color: #fff;
+    }
+
+    .alert-banner.warning {
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+      color: #000;
+    }
+
+    .alert-banner.critical {
+      background: linear-gradient(90deg, #dc2626, #ef4444);
+      color: #fff;
+      animation: pulse-critical 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse-critical {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+    }
+
+    .alert-banner .alert-icon {
+      font-size: 1.25rem;
+    }
+
+    .alert-banner .alert-message {
+      flex: 1;
+    }
+
+    .alert-banner .alert-dismiss {
+      background: rgba(0,0,0,0.2);
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .alert-banner .alert-dismiss:hover {
+      background: rgba(0,0,0,0.3);
+    }
+
+    /* Alert Panel */
+    .alert-panel-toggle {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--color-blue);
+      border: none;
+      cursor: pointer;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 15px rgba(96, 165, 250, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 100;
+    }
+
+    .alert-panel-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.5);
+    }
+
+    .alert-panel-toggle .alert-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .alert-panel {
+      position: fixed;
+      bottom: 6rem;
+      right: 2rem;
+      width: 380px;
+      max-height: 500px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      z-index: 99;
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.3s, opacity 0.3s;
+      overflow: hidden;
+    }
+
+    .alert-panel.visible {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .alert-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .alert-panel-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .alert-panel-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .alert-panel-close:hover {
+      color: var(--text-primary);
+    }
+
+    .alert-panel-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .alert-tab {
+      flex: 1;
+      padding: 0.75rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .alert-tab.active {
+      color: var(--color-blue);
+      border-bottom: 2px solid var(--color-blue);
+    }
+
+    .alert-tab:hover:not(.active) {
+      color: var(--text-primary);
+      background: var(--bg-card-hover);
+    }
+
+    .alert-panel-content {
+      max-height: 350px;
+      overflow-y: auto;
+    }
+
+    .alert-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s;
+    }
+
+    .alert-item:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .alert-item:last-child {
+      border-bottom: none;
+    }
+
+    .alert-item-icon {
+      font-size: 1.25rem;
+    }
+
+    .alert-item.info .alert-item-icon { color: #60a5fa; }
+    .alert-item.warning .alert-item-icon { color: #fbbf24; }
+    .alert-item.critical .alert-item-icon { color: #ef4444; }
+
+    .alert-item-content {
+      flex: 1;
+    }
+
+    .alert-item-title {
+      font-weight: 500;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .alert-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .alert-item-dismiss {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      padding: 0.25rem;
+      transition: color 0.2s;
+    }
+
+    .alert-item-dismiss:hover {
+      color: var(--text-primary);
+    }
+
+    .alert-config-section {
+      padding: 1rem;
+    }
+
+    .alert-config-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .alert-toggle-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .alert-toggle-item:last-child {
+      border-bottom: none;
+    }
+
+    .alert-toggle-label {
+      font-size: 0.875rem;
+    }
+
+    .alert-toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--border-color);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .alert-toggle.active {
+      background: var(--color-blue);
+    }
+
+    .alert-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .alert-toggle.active::after {
+      transform: translateX(20px);
+    }
+
+    .alert-empty {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+    }
+
+    /* Anomaly Indicator */
+    .metric-card.anomalous {
+      border-color: #f59e0b;
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+
+    .metric-card.anomalous::before {
+      content: '⚠️ Anomaly Detected';
+      display: block;
+      font-size: 0.7rem;
+      color: #f59e0b;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .anomaly-badge {
+      display: inline-block;
+      background: #f59e0b;
+      color: #000;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .header {
@@ -554,6 +888,35 @@
     Last updated: <span id="last-updated">--</span>
   </div>
 
+  <!-- Alert Banner -->
+  <div class="alert-banner" id="alert-banner">
+    <span class="alert-icon"></span>
+    <span class="alert-message"></span>
+    <button class="alert-dismiss" onclick="dismissAlertBanner()">×</button>
+  </div>
+
+  <!-- Alert Panel Toggle -->
+  <button class="alert-panel-toggle" id="alert-panel-toggle" onclick="toggleAlertPanel()">
+    🔔
+    <span class="alert-badge" id="alert-badge" style="display: none;">0</span>
+  </button>
+
+  <!-- Alert Panel -->
+  <div class="alert-panel" id="alert-panel">
+    <div class="alert-panel-header">
+      <span class="alert-panel-title">Alerts</span>
+      <button class="alert-panel-close" onclick="toggleAlertPanel()">×</button>
+    </div>
+    <div class="alert-panel-tabs">
+      <button class="alert-tab active" data-tab="active" onclick="switchAlertTab('active')">Active</button>
+      <button class="alert-tab" data-tab="history" onclick="switchAlertTab('history')">History</button>
+      <button class="alert-tab" data-tab="config" onclick="switchAlertTab('config')">⚙️</button>
+    </div>
+    <div class="alert-panel-content" id="alert-panel-content">
+      <!-- Alert items populated by JS -->
+    </div>
+  </div>
+
   <script>
     // Historical data storage with timestamps
     const historicalData = {
@@ -561,6 +924,31 @@
       tasks: [],
       agents: [],
       last24h: [] // Store all metrics with timestamps
+    };
+
+    // Alert system state
+    const alertState = {
+      activeAlerts: [],
+      alertHistory: [],
+      config: {
+        activeSessionsThreshold: 5,
+        tasksCompletedZeroMinutes: 60,
+        enabled: {
+          activeSessions: true,
+          tasksCompleted: true,
+          anomalyDetection: true
+        }
+      },
+      dismissedBanner: false,
+      currentTab: 'active'
+    };
+
+    // Anomaly detection state
+    const anomalyState = {
+      baselines: {
+        tasks: { values: [], avg: 0, std: 0 }
+      },
+      anomalies: {}
     };
 
     // Previous day's totals for comparison
@@ -924,6 +1312,395 @@
       renderHeatmap(generateHeatmapData());
       renderBarChart(generateWorkloadData());
     }, 30000);
+
+    // ==================== ALERT SYSTEM ====================
+
+    // Calculate rolling baseline for anomaly detection
+    function updateAnomalyBaseline() {
+      const tasks = historicalData.last24h.map(d => d.totalTasks);
+      if (tasks.length < 10) return;
+      
+      const values = tasks.slice(-20); // Use last 20 data points
+      const sum = values.reduce((a, b) => a + b, 0);
+      const avg = sum / values.length;
+      const variance = values.reduce((acc, val) => acc + Math.pow(val - avg, 2), 0) / values.length;
+      const std = Math.sqrt(variance);
+      
+      anomalyState.baselines.tasks = { values, avg, std };
+    }
+
+    // Check for anomalies
+    function checkAnomaly(metric, value) {
+      const baseline = anomalyState.baselines[metric];
+      if (!baseline || baseline.std === 0) return false;
+      
+      const deviation = Math.abs(value - baseline.avg) / baseline.std;
+      return deviation > 2; // More than 2 standard deviations
+    }
+
+    // Add alert
+    function addAlert(type, severity, title, message, metadata = {}) {
+      const alert = {
+        id: Date.now() + Math.random(),
+        type,
+        severity,
+        title,
+        message,
+        timestamp: new Date().toISOString(),
+        metadata,
+        dismissed: false
+      };
+      
+      // Check if similar alert already active
+      const existing = alertState.activeAlerts.find(a => a.type === type && !a.dismissed);
+      if (existing) return; // Don't duplicate
+      
+      alertState.activeAlerts.push(alert);
+      alertState.alertHistory.unshift(alert);
+      
+      // Keep only last 100 in history
+      if (alertState.alertHistory.length > 100) {
+        alertState.alertHistory = alertState.alertHistory.slice(0, 100);
+      }
+      
+      updateAlertUI();
+      
+      // Send browser notification for critical alerts
+      if (severity === 'critical') {
+        sendBrowserNotification(title, message);
+      }
+    }
+
+    // Dismiss alert
+    function dismissAlert(alertId) {
+      const alert = alertState.activeAlerts.find(a => a.id === alertId);
+      if (alert) {
+        alert.dismissed = true;
+        alertState.activeAlerts = alertState.activeAlerts.filter(a => a.id !== alertId);
+        updateAlertUI();
+      }
+    }
+
+    // Check thresholds and generate alerts
+    function checkThresholds(data) {
+      // Active sessions threshold
+      if (alertState.config.enabled.activeSessions && data.activeSessions > alertState.config.activeSessionsThreshold) {
+        addAlert('activeSessions', 'warning', 'High Active Sessions', 
+          `${data.activeSessions} active sessions (threshold: ${alertState.config.activeSessionsThreshold})`,
+          { value: data.activeSessions, threshold: alertState.config.activeSessionsThreshold }
+        );
+      }
+      
+      // Check for zero tasks completed in threshold period
+      const oneHourAgo = Date.now() - alertState.config.tasksCompletedZeroMinutes * 60000;
+      const recentTasks = historicalData.last24h.filter(e => new Date(e.timestamp).getTime() > oneHourAgo);
+      const tasksLastHour = recentTasks.reduce((sum, e) => sum + e.totalTasks, 0);
+      
+      if (alertState.config.enabled.tasksCompleted && tasksLastHour === 0 && historicalData.last24h.length > 2) {
+        addAlert('tasksCompleted', 'critical', 'No Tasks Completed', 
+          `Zero tasks completed in the last ${alertState.config.tasksCompletedZeroMinutes} minutes`,
+          { value: 0, threshold: alertState.config.tasksCompletedZeroMinutes }
+        );
+      }
+    }
+
+    // Update anomaly indicators on cards
+    function updateAnomalyIndicators(data) {
+      anomalyState.anomalies = {};
+      
+      if (alertState.config.enabled.anomalyDetection) {
+        updateAnomalyBaseline();
+        
+        // Check sessions anomaly
+        if (checkAnomaly('tasks', data.totalTasks)) {
+          anomalyState.anomalies.tasks = true;
+        }
+      }
+    }
+
+    // Show alert banner
+    function showAlertBanner(severity, message) {
+      if (alertState.dismissedBanner) return;
+      
+      const banner = document.getElementById('alert-banner');
+      const icon = banner.querySelector('.alert-icon');
+      const msgEl = banner.querySelector('.alert-message');
+      
+      banner.className = `alert-banner ${severity}`;
+      
+      if (severity === 'critical') {
+        icon.textContent = '🚨';
+      } else if (severity === 'warning') {
+        icon.textContent = '⚠️';
+      } else {
+        icon.textContent = 'ℹ️';
+      }
+      
+      msgEl.textContent = message;
+      banner.classList.add('visible');
+    }
+
+    // Dismiss alert banner
+    function dismissAlertBanner() {
+      const banner = document.getElementById('alert-banner');
+      banner.classList.remove('visible');
+      alertState.dismissedBanner = true;
+      
+      // Reset after 5 minutes
+      setTimeout(() => {
+        alertState.dismissedBanner = false;
+      }, 300000);
+    }
+
+    // Toggle alert panel
+    function toggleAlertPanel() {
+      const panel = document.getElementById('alert-panel');
+      panel.classList.toggle('visible');
+    }
+
+    // Switch alert tab
+    function switchAlertTab(tab) {
+      alertState.currentTab = tab;
+      
+      document.querySelectorAll('.alert-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+      });
+      
+      updateAlertUI();
+    }
+
+    // Update alert UI
+    function updateAlertUI() {
+      const content = document.getElementById('alert-panel-content');
+      const badge = document.getElementById('alert-badge');
+      
+      // Update badge count
+      const activeCount = alertState.activeAlerts.filter(a => !a.dismissed).length;
+      badge.textContent = activeCount;
+      badge.style.display = activeCount > 0 ? 'flex' : 'none';
+      
+      if (alertState.currentTab === 'active') {
+        renderActiveAlerts(content);
+      } else if (alertState.currentTab === 'history') {
+        renderAlertHistory(content);
+      } else if (alertState.currentTab === 'config') {
+        renderAlertConfig(content);
+      }
+    }
+
+    // Render active alerts
+    function renderActiveAlerts(container) {
+      const active = alertState.activeAlerts.filter(a => !a.dismissed);
+      
+      if (active.length === 0) {
+        container.innerHTML = '<div class="alert-empty">✅ No active alerts</div>';
+        return;
+      }
+      
+      let html = '';
+      active.forEach(alert => {
+        const icon = alert.severity === 'critical' ? '🚨' : alert.severity === 'warning' ? '⚠️' : 'ℹ️';
+        const time = new Date(alert.timestamp).toLocaleTimeString();
+        html += `
+          <div class="alert-item ${alert.severity}">
+            <span class="alert-item-icon">${icon}</span>
+            <div class="alert-item-content">
+              <div class="alert-item-title">${alert.title}</div>
+              <div class="alert-item-meta">${alert.message} • ${time}</div>
+            </div>
+            <button class="alert-item-dismiss" onclick="dismissAlert(${alert.id})">×</button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // Render alert history
+    function renderAlertHistory(container) {
+      const history = alertState.alertHistory.slice(0, 20);
+      
+      if (history.length === 0) {
+        container.innerHTML = '<div class="alert-empty">No alert history</div>';
+        return;
+      }
+      
+      let html = '';
+      history.forEach(alert => {
+        const icon = alert.severity === 'critical' ? '🚨' : alert.severity === 'warning' ? '⚠️' : 'ℹ️';
+        const time = new Date(alert.timestamp).toLocaleString();
+        html += `
+          <div class="alert-item ${alert.severity}">
+            <span class="alert-item-icon">${icon}</span>
+            <div class="alert-item-content">
+              <div class="alert-item-title">${alert.title}</div>
+              <div class="alert-item-meta">${alert.message} • ${time}</div>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    // Render alert configuration
+    function renderAlertConfig(container) {
+      const cfg = alertState.config;
+      container.innerHTML = `
+        <div class="alert-config-section">
+          <div class="alert-config-title">Alert Thresholds</div>
+          <div class="alert-toggle-item">
+            <span class="alert-toggle-label">Active Sessions > ${cfg.activeSessionsThreshold}</span>
+            <div class="alert-toggle ${cfg.enabled.activeSessions ? 'active' : ''}" 
+                 onclick="toggleAlertConfig('activeSessions')"></div>
+          </div>
+          <div class="alert-toggle-item">
+            <span class="alert-toggle-label">Tasks = 0 for ${cfg.tasksCompletedZeroMinutes}min</span>
+            <div class="alert-toggle ${cfg.enabled.tasksCompleted ? 'active' : ''}" 
+                 onclick="toggleAlertConfig('tasksCompleted')"></div>
+          </div>
+          <div class="alert-toggle-item">
+            <span class="alert-toggle-label">Anomaly Detection</span>
+            <div class="alert-toggle ${cfg.enabled.anomalyDetection ? 'active' : ''}" 
+                 onclick="toggleAlertConfig('anomalyDetection')"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Toggle alert config
+    function toggleAlertConfig(key) {
+      alertState.config.enabled[key] = !alertState.config.enabled[key];
+      updateAlertUI();
+    }
+
+    // Request browser notification permission
+    async function requestNotificationPermission() {
+      if (!('Notification' in window)) return;
+      
+      if (Notification.permission === 'default') {
+        await Notification.requestPermission();
+      }
+    }
+
+    // Send browser notification
+    function sendBrowserNotification(title, body) {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      
+      const notification = new Notification(title, {
+        body,
+        icon: '🤖',
+        tag: 'agent-metrics-alert',
+        requireInteraction: true
+      });
+      
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    }
+
+    // Update anomaly card styling
+    function updateCardAnomalyStyling() {
+      const cards = document.querySelectorAll('.metric-card');
+      
+      cards.forEach((card, index) => {
+        card.classList.remove('anomalous');
+        const existingBadge = card.querySelector('.anomaly-badge');
+        if (existingBadge) existingBadge.remove();
+      });
+      
+      // Check tasks card (index 1)
+      if (anomalyState.anomalies.tasks) {
+        const tasksCard = cards[1];
+        if (tasksCard) {
+          tasksCard.classList.add('anomalous');
+          const label = tasksCard.querySelector('.metric-label');
+          if (label) {
+            const badge = document.createElement('span');
+            badge.className = 'anomaly-badge';
+            badge.textContent = '⚠️ Anomaly';
+            label.appendChild(badge);
+          }
+        }
+      }
+    }
+
+    // Modified fetchMetrics to include alert checking
+    const originalFetchMetrics = fetchMetrics;
+    fetchMetrics = async function() {
+      try {
+        const res = await fetch('/api/metrics');
+        const data = await res.json();
+        
+        // Store in historical data
+        storeMetric(data);
+        
+        // Update metric values with animation
+        const cards = document.querySelectorAll('.metric-card');
+        cards.forEach(card => {
+          card.classList.add('updating');
+          setTimeout(() => card.classList.remove('updating'), 300);
+        });
+        
+        document.getElementById('active-sessions').textContent = data.activeSessions;
+        document.getElementById('total-tasks').textContent = data.totalTasks;
+        document.getElementById('agent-count').textContent = data.agentCount;
+        document.getElementById('uptime').textContent = formatUptime(data.uptime);
+        
+        // Update trends
+        if (historicalData.sessions.length > 1) {
+          updateTrendIndicator('sessions-trend', calculateTrend(data.activeSessions, historicalData.sessions));
+          updateTrendIndicator('tasks-trend', calculateTrend(data.totalTasks, historicalData.tasks));
+          updateTrendIndicator('agents-trend', calculateTrend(data.agentCount, historicalData.agents));
+        }
+        
+        // Update yesterday comparison
+        updateComparisonBadge('sessions-comparison', getYesterdayComparison(data.activeSessions, yesterdayTotals?.activeSessions));
+        updateComparisonBadge('tasks-comparison', getYesterdayComparison(data.totalTasks, yesterdayTotals?.totalTasks));
+        updateComparisonBadge('agents-comparison', getYesterdayComparison(data.agentCount, yesterdayTotals?.agentCount));
+        
+        previousMetrics = { ...data };
+        
+        const now = new Date();
+        document.getElementById('last-updated').textContent = now.toLocaleTimeString();
+        
+        if (data.mock) {
+          document.getElementById('mock-notice').innerHTML = '<span class="mock-badge">MOCK DATA</span>';
+        }
+
+        // Update charts with historical data
+        renderLineChart(historicalData.last24h);
+        
+        // ===== ALERT SYSTEM CHECKS =====
+        checkThresholds(data);
+        updateAnomalyIndicators(data);
+        updateCardAnomalyStyling();
+        
+        // Show banner for highest severity alert
+        const criticalAlert = alertState.activeAlerts.find(a => a.severity === 'critical' && !a.dismissed);
+        const warningAlert = alertState.activeAlerts.find(a => a.severity === 'warning' && !a.dismissed);
+        
+        if (criticalAlert) {
+          showAlertBanner('critical', criticalAlert.message);
+        } else if (warningAlert && !alertState.dismissedBanner) {
+          showAlertBanner('warning', warningAlert.message);
+        } else {
+          document.getElementById('alert-banner').classList.remove('visible');
+        }
+        
+      } catch (error) {
+        console.error('Failed to fetch metrics:', error);
+      }
+    };
+
+    // Initialize alert UI
+    updateAlertUI();
+    
+    // Request notification permission on first interaction
+    document.addEventListener('click', function initNotifications() {
+      requestNotificationPermission();
+      document.removeEventListener('click', initNotifications);
+    }, { once: true });
+
   </script>
 </body>
 </html>
