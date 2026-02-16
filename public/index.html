@@ -5,24 +5,135 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent Metrics Dashboard</title>
   <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #253346;
+      --border-color: #334155;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --color-blue: #60a5fa;
+      --color-green: #34d399;
+      --color-pink: #f472b6;
+      --color-yellow: #fbbf24;
+      --shadow: rgba(0,0,0,0.3);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --border-color: #e2e8f0;
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --shadow: rgba(0,0,0,0.1);
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       min-height: 100vh;
       padding: 2rem;
+      transition: background 0.3s ease, color 0.3s ease;
     }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto 2rem;
+    }
+
     h1 {
       text-align: center;
-      margin-bottom: 2rem;
       font-size: 2rem;
-      color: #60a5fa;
+      color: var(--color-blue);
     }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .theme-toggle {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.5rem;
+      cursor: pointer;
+      font-size: 1.25rem;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--bg-card-hover);
+      transform: scale(1.1);
+    }
+
+    .export-btn {
+      background: var(--color-blue);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    /* Loading Spinner */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.3s ease;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--color-blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     .dashboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -30,29 +141,60 @@
       max-width: 1200px;
       margin: 0 auto;
     }
+
     .metric-card {
-      background: #1e293b;
+      background: var(--bg-card);
       border-radius: 12px;
       padding: 1.5rem;
-      border: 1px solid #334155;
-      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s, box-shadow 0.2s, background 0.3s ease;
     }
+
     .metric-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 25px var(--shadow);
     }
+
+    .metric-card.updating {
+      animation: pulse 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
     .metric-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       margin-bottom: 0.5rem;
     }
+
     .metric-label {
       font-size: 0.875rem;
-      color: #94a3b8;
+      color: var(--text-secondary);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+
+    .comparison-badge {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+
+    .comparison-badge.positive {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--color-green);
+    }
+
+    .comparison-badge.negative {
+      background: rgba(248, 113, 113, 0.15);
+      color: #f87171;
+    }
+
     .trend-indicator {
       display: flex;
       align-items: center;
@@ -62,32 +204,39 @@
       padding: 0.25rem 0.5rem;
       border-radius: 4px;
     }
+
     .trend-up {
-      color: #34d399;
+      color: var(--color-green);
       background: rgba(52, 211, 153, 0.1);
     }
+
     .trend-down {
       color: #f87171;
       background: rgba(248, 113, 113, 0.1);
     }
+
     .trend-neutral {
-      color: #94a3b8;
+      color: var(--text-secondary);
       background: rgba(148, 163, 184, 0.1);
     }
+
     .metric-value {
       font-size: 2.5rem;
       font-weight: 700;
-      color: #60a5fa;
+      color: var(--color-blue);
       transition: all 0.3s ease;
     }
-    .metric-card:nth-child(2) .metric-value { color: #34d399; }
-    .metric-card:nth-child(3) .metric-value { color: #f472b6; }
-    .metric-card:nth-child(4) .metric-value { color: #fbbf24; }
+
+    .metric-card:nth-child(2) .metric-value { color: var(--color-green); }
+    .metric-card:nth-child(3) .metric-value { color: var(--color-pink); }
+    .metric-card:nth-child(4) .metric-value { color: var(--color-yellow); }
+
     .metric-footer {
       margin-top: 1rem;
       font-size: 0.75rem;
-      color: #64748b;
+      color: var(--text-muted);
     }
+
     .mock-badge {
       display: inline-block;
       background: #f59e0b;
@@ -107,24 +256,29 @@
       grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
       gap: 1.5rem;
     }
+
     .chart-card {
-      background: #1e293b;
+      background: var(--bg-card);
       border-radius: 12px;
       padding: 1.5rem;
-      border: 1px solid #334155;
+      border: 1px solid var(--border-color);
       animation: fadeIn 0.5s ease-out;
+      transition: background 0.3s ease;
     }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
     .chart-card:nth-child(1) { animation-delay: 0.1s; }
     .chart-card:nth-child(2) { animation-delay: 0.2s; }
     .chart-card:nth-child(3) { animation-delay: 0.3s; }
+
     .chart-title {
       font-size: 1rem;
       font-weight: 600;
-      color: #e2e8f0;
+      color: var(--text-primary);
       margin-bottom: 1rem;
     }
 
@@ -133,29 +287,39 @@
       width: 100%;
       height: 150px;
     }
+
     .line-chart path {
       fill: none;
-      stroke: #60a5fa;
+      stroke: var(--color-blue);
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
+
     .line-chart .area {
       fill: url(#lineGradient);
       stroke: none;
     }
+
     .line-chart .dot {
-      fill: #60a5fa;
-      stroke: #0f172a;
+      fill: var(--color-blue);
+      stroke: var(--bg-card);
       stroke-width: 2;
+      transition: r 0.2s ease;
     }
+
+    .line-chart .dot:hover {
+      r: 6;
+    }
+
     .line-chart .grid-line {
-      stroke: #334155;
+      stroke: var(--border-color);
       stroke-width: 1;
       stroke-dasharray: 3,3;
     }
+
     .line-chart .axis-label {
-      fill: #64748b;
+      fill: var(--text-muted);
       font-size: 10px;
     }
 
@@ -165,30 +329,51 @@
       grid-template-columns: repeat(24, 1fr);
       gap: 2px;
     }
+
     .heatmap-cell {
       aspect-ratio: 1;
       border-radius: 2px;
       transition: transform 0.2s, opacity 0.2s;
       cursor: pointer;
+      position: relative;
     }
+
     .heatmap-cell:hover {
       transform: scale(1.3);
       z-index: 1;
     }
+
+    .heatmap-cell:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      white-space: nowrap;
+      margin-bottom: 4px;
+    }
+
     .heatmap-label {
       grid-column: span 24;
       display: flex;
       justify-content: space-between;
       font-size: 0.65rem;
-      color: #64748b;
+      color: var(--text-muted);
       margin-bottom: 0.25rem;
     }
+
     .heatmap-row {
       display: contents;
     }
+
     .heatmap-day {
       font-size: 0.65rem;
-      color: #64748b;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
     }
@@ -200,49 +385,103 @@
       justify-content: space-around;
       height: 120px;
       padding: 1rem 0;
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid var(--border-color);
     }
+
     .bar-group {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.5rem;
     }
+
     .bar {
       width: 40px;
       border-radius: 4px 4px 0 0;
       transition: height 0.5s ease-out;
       animation: growUp 0.5s ease-out;
+      position: relative;
     }
+
+    .bar:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-primary);
+      color: var(--bg-primary);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+    }
+
     @keyframes growUp {
       from { transform: scaleY(0); }
       to { transform: scaleY(1); }
     }
+
     .bar-label {
       font-size: 0.7rem;
-      color: #94a3b8;
+      color: var(--text-secondary);
     }
+
     .bar-value {
       font-size: 0.7rem;
       font-weight: 600;
-      color: #e2e8f0;
+      color: var(--text-primary);
     }
 
     .last-updated {
       text-align: center;
       margin-top: 2rem;
-      color: #64748b;
+      color: var(--text-muted);
       font-size: 0.875rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .charts-section {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>🤖 Agent Metrics Dashboard</h1>
+  <!-- Loading Spinner -->
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="header">
+    <h1>🤖 Agent Metrics Dashboard</h1>
+    <div class="header-actions">
+      <button class="export-btn" id="export-btn" title="Export to CSV">
+        📥 Export CSV
+      </button>
+      <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+        🌙
+      </button>
+    </div>
+  </div>
   
   <div class="dashboard">
     <div class="metric-card">
       <div class="metric-header">
-        <div class="metric-label">Active Sessions</div>
+        <div>
+          <div class="metric-label">Active Sessions</div>
+          <span class="comparison-badge" id="sessions-comparison"></span>
+        </div>
         <div class="trend-indicator trend-up" id="sessions-trend">↑ 0%</div>
       </div>
       <div class="metric-value" id="active-sessions">--</div>
@@ -251,7 +490,10 @@
     
     <div class="metric-card">
       <div class="metric-header">
-        <div class="metric-label">Tasks Completed</div>
+        <div>
+          <div class="metric-label">Tasks Completed</div>
+          <span class="comparison-badge" id="tasks-comparison"></span>
+        </div>
         <div class="trend-indicator trend-up" id="tasks-trend">↑ 0%</div>
       </div>
       <div class="metric-value" id="total-tasks">--</div>
@@ -260,7 +502,10 @@
     
     <div class="metric-card">
       <div class="metric-header">
-        <div class="metric-label">Active Agents</div>
+        <div>
+          <div class="metric-label">Active Agents</div>
+          <span class="comparison-badge" id="agents-comparison"></span>
+        </div>
         <div class="trend-indicator trend-neutral" id="agents-trend">→ 0%</div>
       </div>
       <div class="metric-value" id="agent-count">--</div>
@@ -284,8 +529,8 @@
       <svg class="line-chart" id="tasks-line-chart" viewBox="0 0 300 150">
         <defs>
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.3" />
-            <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:0" />
+            <stop offset="0%" style="stop-color:var(--color-blue);stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:var(--color-blue);stop-opacity:0" />
           </linearGradient>
         </defs>
       </svg>
@@ -310,21 +555,137 @@
   </div>
 
   <script>
-    // Historical data for charts (mock)
-    let historicalTasks = [];
+    // Historical data storage with timestamps
+    const historicalData = {
+      sessions: [],
+      tasks: [],
+      agents: [],
+      last24h: [] // Store all metrics with timestamps
+    };
+
+    // Previous day's totals for comparison
+    let yesterdayTotals = null;
     let previousMetrics = null;
     
-    // Generate mock historical data for the line chart
-    function generateHistoricalTasks() {
+    // Initialize historical data
+    function initHistoricalData() {
       const now = Date.now();
-      const data = [];
+      // Generate mock last 24 hours of data
       for (let i = 23; i >= 0; i--) {
-        data.push({
-          hour: new Date(now - i * 3600000).getHours(),
-          tasks: Math.floor(Math.random() * 15) + (i < 6 ? 3 : 8)
+        const timestamp = now - i * 3600000;
+        historicalData.last24h.push({
+          timestamp: new Date(timestamp).toISOString(),
+          activeSessions: Math.floor(Math.random() * 5) + 1,
+          totalTasks: Math.floor(Math.random() * 20) + 5,
+          agentCount: 3
         });
       }
-      return data;
+      // Generate mock yesterday's total
+      yesterdayTotals = {
+        activeSessions: Math.floor(Math.random() * 5) + 2,
+        totalTasks: Math.floor(Math.random() * 100) + 50,
+        agentCount: 3
+      };
+    }
+
+    // Store metric in historical data
+    function storeMetric(data) {
+      const entry = {
+        timestamp: data.timestamp || new Date().toISOString(),
+        activeSessions: data.activeSessions,
+        totalTasks: data.totalTasks,
+        agentCount: data.agentCount
+      };
+      
+      historicalData.last24h.push(entry);
+      
+      // Keep only last 24 hours
+      const cutoff = Date.now() - 24 * 3600000;
+      historicalData.last24h = historicalData.last24h.filter(e => new Date(e.timestamp).getTime() > cutoff);
+      
+      historicalData.sessions.push(data.activeSessions);
+      historicalData.tasks.push(data.totalTasks);
+      historicalData.agents.push(data.agentCount);
+      
+      // Keep last 48 entries for trend calculation
+      if (historicalData.sessions.length > 48) historicalData.sessions.shift();
+      if (historicalData.tasks.length > 48) historicalData.tasks.shift();
+      if (historicalData.agents.length > 48) historicalData.agents.shift();
+    }
+
+    // Calculate yesterday comparison
+    function getYesterdayComparison(current, yesterday) {
+      if (!yesterday) return { value: 0, direction: 'neutral', text: '' };
+      
+      const change = current - yesterday;
+      const percentChange = yesterday > 0 ? ((change / yesterday) * 100).toFixed(0) : 0;
+      
+      let direction = 'neutral';
+      let text = 'Same';
+      
+      if (change > 0) {
+        direction = 'positive';
+        text = `+${percentChange}% vs yesterday`;
+      } else if (change < 0) {
+        direction = 'negative';
+        text = `${percentChange}% vs yesterday`;
+      }
+      
+      return { value: change, direction, text };
+    }
+
+    // Theme management
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      document.getElementById('theme-toggle').textContent = savedTheme === 'light' ? '🌙' : '☀️';
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      document.getElementById('theme-toggle').textContent = next === 'light' ? '🌙' : '☀️';
+    }
+
+    // Export to CSV
+    function exportToCSV() {
+      const headers = ['Timestamp', 'Active Sessions', 'Tasks Completed', 'Agent Count'];
+      const rows = historicalData.last24h.map(entry => [
+        entry.timestamp,
+        entry.activeSessions,
+        entry.totalTasks,
+        entry.agentCount
+      ]);
+
+      // Add summary totals
+      const totals = historicalData.last24h.reduce((acc, curr) => ({
+        sessions: acc.sessions + curr.activeSessions,
+        tasks: acc.tasks + curr.totalTasks,
+        agents: Math.max(acc.agents, curr.agentCount)
+      }), { sessions: 0, tasks: 0, agents: 0 });
+
+      let csvContent = 'data:text/csv;charset=utf-8,';
+      csvContent += headers.join(',') + '\n';
+      rows.forEach(row => {
+        csvContent += row.join(',') + '\n';
+      });
+
+      // Add summary section
+      csvContent += '\nSummary (Last 24 Hours)\n';
+      csvContent += `Total Sessions,${totals.sessions}\n`;
+      csvContent += `Total Tasks,${totals.tasks}\n`;
+      csvContent += `Peak Agents,${totals.agents}\n`;
+      csvContent += `Exported At,${new Date().toISOString()}\n`;
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `agent-metrics-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     // Generate heatmap data (7 days x 24 hours)
@@ -339,7 +700,7 @@
           // Simulate higher activity during work hours
           let intensity = Math.random();
           if (h >= 9 && h <= 17) intensity *= 2;
-          if (d === today - 1 || d === today) intensity *= 1.5; // Recent days more active
+          if (d === today - 1 || d === today) intensity *= 1.5;
           dayData.hours.push(Math.min(1, intensity));
         }
         data.push(dayData);
@@ -367,8 +728,10 @@
     }
 
     function calculateTrend(current, previous) {
-      if (!previous) return { value: 0, direction: 'neutral' };
-      const change = ((current - previous) / previous) * 100;
+      if (!previous || previous.length < 2) return { value: 0, direction: 'neutral' };
+      const prev = previous[previous.length - 2] || current;
+      if (prev === 0) return { value: 0, direction: 'neutral' };
+      const change = ((current - prev) / prev) * 100;
       return {
         value: Math.abs(change).toFixed(0),
         direction: change > 0 ? 'up' : change < 0 ? 'down' : 'neutral'
@@ -382,24 +745,33 @@
       el.textContent = `${arrow} ${trend.value}%`;
     }
 
+    function updateComparisonBadge(id, comparison) {
+      const el = document.getElementById(id);
+      el.className = `comparison-badge ${comparison.direction}`;
+      el.textContent = comparison.text;
+    }
+
     function renderLineChart(data) {
       const svg = document.getElementById('tasks-line-chart');
       const width = 300, height = 150;
       const padding = { top: 10, right: 10, bottom: 25, left: 30 };
       
-      const maxVal = Math.max(...data.map(d => d.tasks), 10);
+      const maxVal = Math.max(...data.map(d => d.totalTasks), 10);
       const points = data.map((d, i) => {
         const x = padding.left + (i / (data.length - 1)) * (width - padding.left - padding.right);
-        const y = height - padding.bottom - (d.tasks / maxVal) * (height - padding.top - padding.bottom);
+        const y = height - padding.bottom - (d.totalTasks / maxVal) * (height - padding.top - padding.bottom);
         return `${x},${y}`;
       });
       
-      // Create path
+      // Get CSS variable
+      const style = getComputedStyle(document.documentElement);
+      const blueColor = style.getPropertyValue('--color-blue').trim() || '#60a5fa';
+      
       let html = `
         <defs>
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:0.3" />
-            <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:0" />
+            <stop offset="0%" style="stop-color:${blueColor};stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:${blueColor};stop-opacity:0" />
           </linearGradient>
         </defs>
       `;
@@ -417,11 +789,12 @@
       // Line
       html += `<path d="M ${points.join(' L ')}"/>`;
       
-      // Dots
+      // Dots with tooltips
       points.forEach((p, i) => {
         const [x, y] = p.split(',');
-        if (i % 4 === 0) { // Show every 4th dot
-          html += `<circle class="dot" cx="${x}" cy="${y}" r="3"/>`;
+        if (i % 4 === 0) {
+          const tooltip = `Tasks: ${data[i].totalTasks}, Time: ${new Date(data[i].timestamp).toLocaleTimeString()}`;
+          html += `<circle class="dot" cx="${x}" cy="${y}" r="4" data-tooltip="${tooltip}"/>`;
         }
       });
       
@@ -429,7 +802,8 @@
       data.forEach((d, i) => {
         if (i % 6 === 0) {
           const x = padding.left + (i / (data.length - 1)) * (width - padding.left - padding.right);
-          html += `<text class="axis-label" x="${x}" y="${height - 5}" text-anchor="middle">${d.hour}h</text>`;
+          const hour = new Date(d.timestamp).getHours();
+          html += `<text class="axis-label" x="${x}" y="${height - 5}" text-anchor="middle">${hour}h</text>`;
         }
       });
       
@@ -442,10 +816,10 @@
       
       data.forEach(row => {
         html += `<div class="heatmap-day">${row.day}</div>`;
-        row.hours.forEach(intensity => {
+        row.hours.forEach((intensity, h) => {
           const color = intensity > 0.7 ? '#34d399' : intensity > 0.4 ? '#60a5fa' : intensity > 0.2 ? '#334155' : '#1e293b';
           const opacity = 0.3 + intensity * 0.7;
-          html += `<div class="heatmap-cell" style="background: ${color}; opacity: ${opacity}" title="${(intensity * 100).toFixed(0)}% activity"></div>`;
+          html += `<div class="heatmap-cell" style="background: ${color}; opacity: ${opacity}" data-tooltip="${(intensity * 100).toFixed(0)}% activity - Hour ${h}"></div>`;
         });
       });
       
@@ -462,7 +836,7 @@
         html += `
           <div class="bar-group">
             <div class="bar-value">${d.tasks}</div>
-            <div class="bar" style="height: ${height}px; background: ${d.color}; animation-delay: ${Math.random() * 0.3}s"></div>
+            <div class="bar" style="height: ${height}px; background: ${d.color}; animation-delay: ${Math.random() * 0.3}s" data-tooltip="${d.tasks} tasks"></div>
             <div class="bar-label">${d.agent}</div>
           </div>
         `;
@@ -476,18 +850,33 @@
         const res = await fetch('/api/metrics');
         const data = await res.json();
         
+        // Store in historical data
+        storeMetric(data);
+        
         // Update metric values with animation
+        const cards = document.querySelectorAll('.metric-card');
+        cards.forEach(card => {
+          card.classList.add('updating');
+          setTimeout(() => card.classList.remove('updating'), 300);
+        });
+        
         document.getElementById('active-sessions').textContent = data.activeSessions;
         document.getElementById('total-tasks').textContent = data.totalTasks;
         document.getElementById('agent-count').textContent = data.agentCount;
         document.getElementById('uptime').textContent = formatUptime(data.uptime);
         
         // Update trends
-        if (previousMetrics) {
-          updateTrendIndicator('sessions-trend', calculateTrend(data.activeSessions, previousMetrics.activeSessions));
-          updateTrendIndicator('tasks-trend', calculateTrend(data.totalTasks, previousMetrics.totalTasks));
-          updateTrendIndicator('agents-trend', calculateTrend(data.agentCount, previousMetrics.agentCount));
+        if (historicalData.sessions.length > 1) {
+          updateTrendIndicator('sessions-trend', calculateTrend(data.activeSessions, historicalData.sessions));
+          updateTrendIndicator('tasks-trend', calculateTrend(data.totalTasks, historicalData.tasks));
+          updateTrendIndicator('agents-trend', calculateTrend(data.agentCount, historicalData.agents));
         }
+        
+        // Update yesterday comparison
+        updateComparisonBadge('sessions-comparison', getYesterdayComparison(data.activeSessions, yesterdayTotals?.activeSessions));
+        updateComparisonBadge('tasks-comparison', getYesterdayComparison(data.totalTasks, yesterdayTotals?.totalTasks));
+        updateComparisonBadge('agents-comparison', getYesterdayComparison(data.agentCount, yesterdayTotals?.agentCount));
+        
         previousMetrics = { ...data };
         
         const now = new Date();
@@ -496,31 +885,42 @@
         if (data.mock) {
           document.getElementById('mock-notice').innerHTML = '<span class="mock-badge">MOCK DATA</span>';
         }
+
+        // Update charts with historical data
+        renderLineChart(historicalData.last24h);
       } catch (error) {
         console.error('Failed to fetch metrics:', error);
       }
     }
 
-    // Initialize charts
-    historicalTasks = generateHistoricalTasks();
-    renderLineChart(historicalTasks);
+    // Initialize
+    initHistoricalData();
+    initTheme();
+    
+    // Theme toggle
+    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    
+    // Export button
+    document.getElementById('export-btn').addEventListener('click', exportToCSV);
+    
+    // Initial render
+    renderLineChart(historicalData.last24h);
     renderHeatmap(generateHeatmapData());
     renderBarChart(generateWorkloadData());
     
     // Initial fetch
     fetchMetrics();
     
+    // Hide loading spinner
+    setTimeout(() => {
+      document.getElementById('loading-overlay').classList.add('hidden');
+    }, 500);
+    
     // Refresh every 10 seconds
     setInterval(fetchMetrics, 10000);
     
     // Refresh charts every 30 seconds
     setInterval(() => {
-      historicalTasks.shift();
-      historicalTasks.push({
-        hour: new Date().getHours(),
-        tasks: Math.floor(Math.random() * 15) + 5
-      });
-      renderLineChart(historicalTasks);
       renderHeatmap(generateHeatmapData());
       renderBarChart(generateWorkloadData());
     }, 30000);
